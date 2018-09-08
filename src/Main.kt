@@ -1,17 +1,30 @@
-import java.awt.Graphics2D
-import java.awt.Toolkit
 import java.awt.image.*
 import java.io.File
-import java.io.FilenameFilter
-import java.nio.file.Files
 import java.util.*
 import javax.imageio.ImageIO
+import javax.swing.JFileChooser
+import javax.swing.JFrame
+import kotlin.coroutines.experimental.coroutineContext
 
 fun main(args:Array<String>){
 
     println("ファイル名を含む絶対パスを入力してください")
-    val scanner = Scanner(System.`in`)
-    val passInput:String = scanner.nextLine()
+
+
+    var selected:Int = 0
+    val open = object : JFrame() {
+        fun openFile() : File{
+            val fileChooser = JFileChooser()
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
+            selected = fileChooser.showOpenDialog(this)
+            return fileChooser.selectedFile
+        }
+
+    }
+    val selectedFile = open.openFile()
+
+    /*val scanner = Scanner(System.`in`)
+    val passInput:String = scanner.nextLine()*/
 
     //println("PASS $passInput")
     println("1:倍率リサイズ(%),2:横幅の画素数に合わせる,3:縦の画素数に合わせる,4:縦横リサイズ")
@@ -34,7 +47,7 @@ fun main(args:Array<String>){
     val size:Int = sizeScanner.nextInt()
 
     val filter = NeedFiles()
-    val list = filter.imageFilter(File(passInput))
+    val list = filter.imageFilter(selectedFile)
 
     fun editFile(file:File):BufferedImage?{
         val resize = ImageResize()
@@ -58,11 +71,11 @@ fun main(args:Array<String>){
         return null
     }
 
-    val current:File = File(passInput + "\\resize")
+    val current:File = File(selectedFile.absolutePath + "\\resize")
     current.mkdir()
     var count:Int = 0
     for(file in list){
-        ImageIO.write(editFile(file),"jpeg", File(passInput + "\\resize" + "\\" + file.name))
+        ImageIO.write(editFile(file),"jpeg", File(selectedFile.absolutePath + "\\resize" + "\\" + file.name))
         print("#")
         count ++
     }
