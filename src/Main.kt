@@ -4,29 +4,25 @@ import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.JFileChooser
 import javax.swing.JFrame
-import kotlin.coroutines.experimental.coroutineContext
 
 fun main(args:Array<String>){
 
-    println("ファイル名を含む絶対パスを入力してください")
-
-
-    var selected:Int = 0
     val open = object : JFrame() {
-        fun openFile() : File{
+        fun openFile() : File {
             val fileChooser = JFileChooser()
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
-            selected = fileChooser.showOpenDialog(this)
+            fileChooser.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+            val selected = fileChooser.showOpenDialog(this)
+            if(selected == JFileChooser.CANCEL_OPTION || selected == JFileChooser.ERROR_OPTION){
+                System.exit(0)
+            }
             return fileChooser.selectedFile
+
         }
 
     }
+
     val selectedFile = open.openFile()
 
-    /*val scanner = Scanner(System.`in`)
-    val passInput:String = scanner.nextLine()*/
-
-    //println("PASS $passInput")
     println("1:倍率リサイズ(%),2:横幅の画素数に合わせる,3:縦の画素数に合わせる,4:縦横リサイズ")
     val whatSize = Scanner(System.`in`)
     val whatSizeIt = whatSize.nextInt()
@@ -37,10 +33,10 @@ fun main(args:Array<String>){
     if(whatSizeIt == 4){
         println("横(Width)")
         val widthScan = Scanner(System.`in`)
-        width = widthScan.nextInt() as Double
+        width = widthScan.nextInt().toDouble()
         println("縦(Height)")
         val heightScan = Scanner(System.`in`)
-        height = heightScan.nextInt() as Double
+        height = heightScan.nextInt().toDouble()
     }
 
     val sizeScanner = Scanner(System.`in`)
@@ -73,12 +69,11 @@ fun main(args:Array<String>){
 
     val current:File = File(selectedFile.absolutePath + "\\resize")
     current.mkdir()
-    var count:Int = 0
-    for(file in list){
-        ImageIO.write(editFile(file),"jpeg", File(selectedFile.absolutePath + "\\resize" + "\\" + file.name))
+    list.forEach{ it ->
+        ImageIO.write(editFile(it),"jpeg", File(selectedFile.absolutePath + "\\resize\\" + it.name))
         print("#")
-        count ++
     }
+    System.exit(0)
 }
 
 

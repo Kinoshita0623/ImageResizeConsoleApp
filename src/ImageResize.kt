@@ -57,22 +57,18 @@ class ImageResize{
 
 class NeedFiles{
     fun imageFilter(file:File):Array<File>{
-        val filter = object: FilenameFilter {
-            override fun accept(dir: File?,filename: String):Boolean{
-
-                if(filename == null){
-                    return false
-                }
-                var point:Int = filename.lastIndexOf(".")
-                if(point != -1){
-                    val text = filename.substring(point + 1).toUpperCase()
-                    text.toUpperCase()
-                    if(text ==  "JPG" ||  text == "PNG" || text == "GIF")
-                        return true
-                }
-                return false
-
+        val filter = FilenameFilter { dir, filename ->
+            if(filename == null){
+                return@FilenameFilter false
             }
+            var point:Int = filename.lastIndexOf(".")
+            if(point != -1){
+                val text = filename.substring(point + 1).toUpperCase()
+                text.toUpperCase()
+                if(text ==  "JPG" ||  text == "PNG" || text == "GIF")
+                    return@FilenameFilter true
+            }
+            return@FilenameFilter false
         }
         return file.listFiles(filter)
     }
